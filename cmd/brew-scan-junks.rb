@@ -1,16 +1,10 @@
 require "cask/caskroom"
 
-$paths_being_used = Set.new
-
 class Uninstaller < Cask::Artifact::AbstractUninstall
-  def scan_trash_paths
-    # puts @cask.to_h
-    # puts @cask.installed?
-    # puts Array(@directives[:trash])
-
-    each_resolved_path(:trash, Array(@directives[:trash])) do |path, resolved_paths|
+  def scan_paths(paths)
+    each_resolved_path(:scan, paths) do |path, resolved_paths|
       if $paths_being_used.include? path
-        puts "Skipped path being used: #{path}"
+        odebug "Skipped path being used: #{path}"
       else
         resolved_paths.each do | resolved_path|
           ohai "Found #{resolved_path} used by #{Formatter.identifier(@cask.token)} (#{resolved_path.abv})"
@@ -20,41 +14,83 @@ class Uninstaller < Cask::Artifact::AbstractUninstall
   end
 end
 
-def get_cask_stanzas(cask)
-  cask.artifacts.select { |a| a.is_a?(Cask::Artifact::Zap) }
+def get_all_casks
+  Tap.default_cask_tap.cask_files.map do |f|
+    Cask::CaskLoader::FromTapPathLoader.new(f).load(config: nil)
+  rescue CaskUnreadableError => e
+    opoo e.message
+
+    nil
+  end.compact
 end
 
-def get_cask_trash_paths(cask)
-  nested_paths = get_cask_stanzas(cask).map do |stanza|
-    stanza.directives[:trash]
+def cask_artifacts_exists?(cask)
+  app_artifacts = cask.artifacts.select { |a| a.is_a?(Cask::Artifact::App) }
+
+  app_artifacts.map do |app_artifact|
+    if Cask::Utils.path_occupied?(app_artifact.target)
+      odebug "#{app_artifact.target} from #{Formatter.identifier(cask.token)} exists"
+      return true
+    end
   end
 
-  return nested_paths.flatten
+  return false
+end
+
+def get_cask_uninstall_paths(cask)
+  uninstall_paths = []
+
+  stanzas = cask.artifacts.select do |a|
+    a.is_a?(Cask::Artifact::Zap) or a.is_a?(Cask::Artifact::Uninstall)
+  end
+
+  stanzas.each do |stanza|
+    uninstall_paths.push *stanza.directives[:delete]
+    uninstall_paths.push *stanza.directives[:trash]
+  end
+
+  return uninstall_paths
 end
 
 def scan_cask(cask)
-  if cask.installed?
-    puts "Skipped installed cask #{cask.token}"
-    return
-  else
-    puts "Searching #{cask.token} ..."
-  end
+  odebug "Searching #{cask.token} ..."
 
   begin
-    get_cask_stanzas(cask).each do |stanza|
-      Uninstaller.from_args(cask, stanza.directives).scan_trash_paths
-    end
+    Uninstaller.from_args(cask).scan_paths get_cask_uninstall_paths cask
   rescue Exception => e
-    # puts 'Exception', e
+    ofail e
   end
 end
 
-Cask::Caskroom.casks.each do |cask|
-  $paths_being_used.merge(get_cask_trash_paths(cask))
+$all_casks = get_all_casks
+
+$casks_installed = Set.new
+$paths_being_used = Set.new
+
+ohai "#{$all_casks.length} casks to scan ..."
+
+def scan_install_casks
+  cask_installed = Set.new
+  cask_artifacts_exists = Set.new
+
+  $all_casks.each do |cask|
+    if cask.installed?
+      cask_installed.add(cask.token)
+      $paths_being_used.merge(get_cask_uninstall_paths(cask))
+    elsif cask_artifacts_exists?(cask)
+      cask_artifacts_exists.add(cask.token)
+      $paths_being_used.merge(get_cask_uninstall_paths(cask))
+    end
+  end
+
+  ohai "Installed from cask:"
+  puts cask_installed.to_a.join ', '
+  ohai "Installed from other ways:"
+  puts cask_artifacts_exists.to_a.join ', '
 end
 
-puts "#{Cask::Cask.all.length} casks to scan ..."
+scan_install_casks
 
-Cask::Cask.all.each do |cask|
+$all_casks.each do |cask|
   scan_cask cask
 end
