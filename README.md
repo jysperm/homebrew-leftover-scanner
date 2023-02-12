@@ -1,1 +1,1 @@
-# Homebrew Scan Junks
+# Homebrew Leftover Scanner
