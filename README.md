@@ -8,6 +8,8 @@ Currently an MVP version, TODO list:
 - Pack to a Tap for easy installation
 - Support detecting `launchctl` and `login_item`
 
+![Screenshot](https://raw.githubusercontent.com/jysperm/homebrew-leftover-scanner/main/screenshots/scan-leftovers.jpg)
+
 ## Install & Usages
 
 Clone this repository, then add the `cmd` directory to your `$PATH`:
