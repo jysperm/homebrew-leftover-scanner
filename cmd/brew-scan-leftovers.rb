@@ -2,15 +2,17 @@ require "cask/caskroom"
 
 class Uninstaller < Cask::Artifact::AbstractUninstall
   def scan_paths(paths)
+    result = []
+
     each_resolved_path(:scan, paths) do |path, resolved_paths|
       if $paths_being_used.include? path
         odebug "Skipped path being used: #{path}"
       else
-        resolved_paths.each do | resolved_path|
-          ohai "Found #{resolved_path} used by #{Formatter.identifier(@cask.token)} (#{resolved_path.abv})"
-        end
+        result.push(*resolved_paths)
       end
     end
+
+    result
   end
 end
 
@@ -37,7 +39,7 @@ def cask_artifacts_exists?(cask)
   return false
 end
 
-def get_cask_uninstall_paths(cask)
+def get_cask_uninstall_paths(cask, type)
   uninstall_paths = []
 
   stanzas = cask.artifacts.select do |a|
@@ -45,20 +47,30 @@ def get_cask_uninstall_paths(cask)
   end
 
   stanzas.each do |stanza|
-    uninstall_paths.push *stanza.directives[:delete]
-    uninstall_paths.push *stanza.directives[:trash]
+    uninstall_paths.push *stanza.directives[type]
   end
 
   return uninstall_paths
 end
 
 def scan_cask(cask)
-  odebug "Searching #{cask.token} ..."
+  if cask.artifacts.find { |a| a.is_a?(Cask::Artifact::App) }
+    odebug "Searching #{cask.token} ..."
 
-  begin
-    Uninstaller.from_args(cask).scan_paths get_cask_uninstall_paths cask
-  rescue Exception => e
-    ofail e
+    begin
+      delete_paths = Uninstaller.from_args(cask).scan_paths get_cask_uninstall_paths cask, :delete
+      trash_paths = Uninstaller.from_args(cask).scan_paths get_cask_uninstall_paths cask, :trash
+
+      if delete_paths.length + trash_paths.length > 0
+        ohai "Found leftovers from #{Formatter.identifier(cask.token)}, get rid of them via: #{Formatter.identifier("brew uninstall -f --zap #{cask.token}")}"
+        puts delete_paths.map { |path| "#{path} (delete #{path.abv})" }
+        puts trash_paths.map { |path| "#{path} (trash #{path.abv})" }
+      end
+    rescue Exception => e
+      ofail e
+    end
+  else
+    odebug "Skipped #{cask} because no app artifact in cask"
   end
 end
 
@@ -76,10 +88,12 @@ def scan_install_casks
   $all_casks.each do |cask|
     if cask.installed?
       cask_installed.add(cask.token)
-      $paths_being_used.merge(get_cask_uninstall_paths(cask))
+      $paths_being_used.merge(get_cask_uninstall_paths(cask, :delete))
+      $paths_being_used.merge(get_cask_uninstall_paths(cask, :trash))
     elsif cask_artifacts_exists?(cask)
       cask_artifacts_exists.add(cask.token)
-      $paths_being_used.merge(get_cask_uninstall_paths(cask))
+      $paths_being_used.merge(get_cask_uninstall_paths(cask, :delete))
+      $paths_being_used.merge(get_cask_uninstall_paths(cask, :trash))
     end
   end
 
