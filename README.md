@@ -5,18 +5,16 @@ Use rules from Homebrew Cask to scan for leftover files from uninstalled softwar
 
 Currently an MVP version, TODO list:
 
-- Pack to a Tap for easy installation
 - Support detecting `launchctl` and `login_item`
 
 ![Screenshot](https://raw.githubusercontent.com/jysperm/homebrew-leftover-scanner/main/screenshots/scan-leftovers.jpg)
 
 ## Install & Usages
 
-Clone this repository, then add the `cmd` directory to your `$PATH`:
+Install via `brew tap`:
 
 ```
-git clone https://github.com/jysperm/homebrew-leftover-scanner.git
-export PATH="$(pwd)/homebrew-leftover-scanner/cmd:$PATH"
+brew tap jysperm/leftover-scanner
 ```
 
 Run it:
@@ -45,6 +43,11 @@ bitwarden, wechat, planet, qq, medis
 /Users/jysperm/Library/Caches/com.setapp.DesktopClient.SetappAgent (trash 4 files, 6.1MB)
 /Users/jysperm/Library/Logs/Setapp (trash 7 files, 344.8KB)
 ```
+
+### Full Disk Access
+Full Disk Access is required for this script to scan paths across the entire file system.
+
+Please enable Full Disk Access for your terminal under System Preferences > Security & Privacy > Privacy > Full Disk Access.
 
 ## About the rules
 Most Homebrew casks have a `zap` section, it contains the cache files or logs of that software which can be deleted when you are no longer using it.
