@@ -19,7 +19,7 @@ end
 def get_all_casks
   Tap.default_cask_tap.cask_files.map do |f|
     Cask::CaskLoader::FromTapPathLoader.new(f).load(config: nil)
-  rescue CaskUnreadableError => e
+  rescue Cask::CaskUnreadableError => e
     opoo e.message
 
     nil
