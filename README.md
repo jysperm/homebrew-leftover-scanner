@@ -7,6 +7,10 @@ Currently an MVP version, TODO list:
 
 - Support detecting `launchctl` and `login_item`
 
+Known issues:
+
+- JetBrains' IDEs will be detected as uninstalled if you install them via JetBrains Toolbox
+
 ![Screenshot](https://raw.githubusercontent.com/jysperm/homebrew-leftover-scanner/main/screenshots/scan-leftovers.jpg)
 
 ## Install & Usages
@@ -15,6 +19,7 @@ Install via `brew tap`:
 
 ```
 brew tap jysperm/leftover-scanner
+brew tap homebrew/cask # If you haven't tapped before (Homebrew don't do this by default since 4.0)
 ```
 
 Run it:
@@ -55,7 +60,7 @@ Most Homebrew casks have a `zap` section, it contains the cache files or logs of
 However `brew` doesn't delete these files by default, so the `zap` section may not be well maintained. If you find any issues, you can contribute to the official [homebrew-cask](https://github.com/Homebrew/homebrew-cask) repository.
 
 ```
-$ brew cat
+$ brew cat bitbar
 cask "bitbar" do
   version "1.10.1"
   sha256 "8a7013dca92715ba80cccef98b84dd1bc8d0b4c4b603f732e006eb204bab43fa"
@@ -74,5 +79,3 @@ cask "bitbar" do
   ]
 end
 ```
-
-
