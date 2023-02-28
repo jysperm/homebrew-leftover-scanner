@@ -62,7 +62,8 @@ def scan_cask(cask)
       trash_paths = Uninstaller.from_args(cask).scan_paths get_cask_uninstall_paths cask, :trash
 
       if delete_paths.length + trash_paths.length > 0
-        ohai "Found leftovers from #{Formatter.identifier(cask.token)}, get rid of them via: #{Formatter.identifier("brew uninstall -f --zap #{cask.token}")}"
+        ohai "Found leftovers from #{Formatter.identifier(cask.token)}, get rid of them via:"
+        ohai "#{Formatter.identifier("brew uninstall -f --zap #{cask.token}")}"
         puts delete_paths.map { |path| "#{path} (delete #{path.abv})" }
         puts trash_paths.map { |path| "#{path} (trash #{path.abv})" }
       end
