@@ -37,12 +37,15 @@ $ brew scan-leftovers
 netspot, slack, sketch, steam, brave-browser, powerphotos, downie, paw, tg-pro, clashx, imazing, visual-studio-code, electrum, logseq, handbrake, obs, netnewswire, iterm2, numi, gitup, docker, blender, telegram, discord, wireshark, firefox, iina, google-chrome, zoom, grammarly, squirrel, bettertouchtool, keka, xbar
 ==> Installed from other ways:
 bitwarden, wechat, planet, qq, medis
-==> Found leftovers from bitbar, get rid of them via: brew uninstall -f --zap bitbar
+==> Found leftovers from bitbar, get rid of them via:
+==> brew uninstall -f --zap bitbar
 /Users/jysperm/Library/Caches/com.matryer.BitBar (trash 3 files, 84.2KB)
 /Users/jysperm/Library/Preferences/com.matryer.BitBar.plist (trash 531B)
-==> Found leftovers from epic-games, get rid of them via: brew uninstall -f --zap epic-games
+==> Found leftovers from epic-games, get rid of them via:
+==> brew uninstall -f --zap epic-games
 /Users/jysperm/Library/Application Support/Epic (trash 264B)
-==> Found leftovers from setapp, get rid of them via: brew uninstall -f --zap setapp
+==> Found leftovers from setapp, get rid of them via:
+==> brew uninstall -f --zap setapp
 /Users/jysperm/Library/Application Scripts/com.setapp.DesktopClient.SetappAgent.FinderSyncExt (trash 64B)
 /Users/jysperm/Library/Caches/com.setapp.DesktopClient (trash 3 files, 84.2KB)
 /Users/jysperm/Library/Caches/com.setapp.DesktopClient.SetappAgent (trash 4 files, 6.1MB)
