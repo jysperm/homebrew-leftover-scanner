@@ -1,4 +1,5 @@
 require "cask/caskroom"
+require "livecheck/livecheck"
 
 class Uninstaller < Cask::Artifact::AbstractUninstall
   def scan_paths(paths)
