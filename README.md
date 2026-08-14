@@ -19,7 +19,7 @@ Install via `brew tap`:
 
 ```
 brew tap jysperm/leftover-scanner
-brew tap homebrew/cask # If you haven't tapped before (Homebrew don't do this by default since 4.0)
+brew tap homebrew/cask --force # If you haven't tapped before (Homebrew don't do this by default since 4.0)
 ```
 
 Run it:
