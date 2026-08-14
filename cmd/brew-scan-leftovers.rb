@@ -1,6 +1,9 @@
 require "cask/caskroom"
 require "livecheck/livecheck"
 
+# ohai/opoo/odebug moved out of Kernel into Utils::Output::Mixin
+include Utils::Output::Mixin if defined?(Utils::Output::Mixin)
+
 class Uninstaller < Cask::Artifact::AbstractUninstall
   def scan_paths(paths)
     result = []
